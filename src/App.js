@@ -4,26 +4,20 @@ import './App.css';
 import PropTypes from 'prop-types';
 
 
-// const Todo =(props) => {
-//     return (
-//           <li>
-//             {props.item}
-//           </li>
-//     );
-// }
-
-const Todo =({item}) => {   //REMOVE PROPS (DECONSTRUCT)
+const Todo =({item, toggleComplete, removeToDo}) => {   //REMOVE PROPS (DECONSTRUCT)
     return (
       <li>{item.title}
- <input
-    type="checkbox"
-    id={item.id}
-    checked={item.complete} />
- <label htmlFor={item.id}></label>
- <button>
-    <i className="fa fa-trash"></i>
- </button>
-</li>
+          <input
+              type="checkbox"
+              id={item.id}
+              checked={item.complete}
+              onChange={toggleComplete}
+            />
+                  <label htmlFor={item.id}></label>
+            <button onClick ={removeToDo}>
+              <i className="fa fa-trash"></i>
+             </button>
+        </li>
     );
 }
 
@@ -35,40 +29,109 @@ return(
       </div>
 )}
 
-
-const ClearButton = ({removeCompleted}) => {
+const ClearButton = ({removeCompleted, hasCompleted}) => {
   return(
-  <button onClick={removeCompleted}>
+  <button  onClick={removeCompleted}>
   Remove
   </button>
-
 )}
 
 class App extends Component {
+  constructor() {
+    super();
+    this.state ={
+      todos: [{ id:0, title: 'Learn React', complete: false }],
+      lastId: 0,
+    };
+    this.removeCompleted = this.removeCompleted.bind(this);
+    this.hasCompleted = this.hasCompleted.bind(this);
+  //  this.addToDo = this.addToDo.bind(this); *bound below
+  }
+
+  addTodo = (event) => {
+    event.preventDefault();
+    const id = this.state.lastId +1;
+
+    if(this.toDoInput.value){
+      let todos = this.state.todos.concat({
+        id,
+        title: this.toDoInput.value,
+        complete: false
+      })
+      this.setState({
+        todos,
+        lastId :id,
+      })
+      this.toDoInput.value='';
+    }
+  }
+  toggleComplete(item){
+      let todos = this.state.todos.map( (todo) => {
+          if (todo.id === item.id) {
+            todo.complete = !todo.complete
+          }
+      return todo
+      })
+      this.setState({todos}) //todos.todos if key is same as variable name
+  }
+
+  removeToDo(item){
+    let todos = this.state.todos.filter((todo) => {
+      return todo.id !== item.id;
+     })
+    this.setState({todos})
+  }
+
+  removeCompleted() {
+     let todos = this.state.todos.filter((todo) => !todo.complete);
+     this.setState({ todos });
+  }
+
+  hasCompleted(){
+    let todos = this.state.todos.filter((todo) => todo.complete);
+    if (todos.length > 0){
+      return true;
+    } else {
+      return false;
+    }
+    this.setState({ todos });
+  }
+
+componentDidMount() {
+  this.toDoInput.focus();
+}
   render(){
-      const todos = [
-               { id: 0, title: 'Learn React', complete: false },
-               { id: 1, title: 'More React', complete: false }
-            ];
-
       return (
-
-          <div className="todo-list">
+      <div className="todo-list">
           <h1> So Much To Do </h1>
+
+      <div className="add-todo">
+          <form name="addTodo" onSubmit={this.addTodo}>
+          <input type="text" ref={(input) => (this.toDoInput = input)} />
+              <span>(press enter to add)</span>
+          </form>
+      </div>
+
             <ul>
-              {todos.map((todo,i)=> <Todo key={i} item={todo}  />)}
+              {this.state.todos.map((todo,i)=> (
+                <Todo key={i}
+                      item={todo}
+                      toggleComplete = {this.toggleComplete.bind(this,todo)}
+                      removeToDo = {this.removeToDo.bind(this,todo)}
+                />))}
             </ul>
 
             <div className="todo-admin">
-            <ToDoCount number= {5} />
-            <ClearButton removeCompleted ={"lalala"} />
+            <ToDoCount number= {this.state.todos.length} />
+            {this.hasCompleted() ? <ClearButton removeCompleted ={this.removeCompleted}/> :""}
 
             </div>
-
-
       </div>
-  );
-} }
+    );
+  }
+}
+
+
 
 Todo.propTypes ={
   item: PropTypes.shape({
