@@ -24,6 +24,7 @@ const Todo =({item, toggleComplete, removeToDo}) => {   //REMOVE PROPS (DECONSTR
 const ToDoCount =({number}) => {
 return(
       <div>
+      {number}
       { number > 1  || number === 0 ? 'todos' : 'todo' }
 
       </div>
@@ -42,6 +43,7 @@ class App extends Component {
     this.state ={
       todos: [{ id:0, title: 'Learn React', complete: false }],
       lastId: 0,
+      inputValue:''
     };
     this.removeCompleted = this.removeCompleted.bind(this);
     this.hasCompleted = this.hasCompleted.bind(this);
@@ -138,17 +140,18 @@ Todo.propTypes ={
     id: PropTypes.number.isRequired,
     title: PropTypes.string.isRequired,
     complete: PropTypes.bool.isRequired
+  }),
+  toggleComplete: PropTypes.func.isRequired,
+  removeToDo: PropTypes.func.isRequired
 
-  })
 };
 
 ToDoCount.propTypes ={
   number: PropTypes.number.isRequired
-
 };
 
 ClearButton.propTypes ={
-  removeCompleted: PropTypes.string.isRequired
+  removeCompleted: PropTypes.func.isRequired
 
 };
 
