@@ -118,7 +118,7 @@ componentDidMount() {
               {this.state.todos.map((todo,i)=> (
                 <Todo key={i}
                       item={todo}
-                      toggleComplete = {this.toggleComplete.bind(this,todo)}
+                      toggleComplete = {this.toggleComplete.bind(this,todo)} //this.toggleComplete is referencing class method
                       removeToDo = {this.removeToDo.bind(this,todo)}
                 />))}
             </ul>
